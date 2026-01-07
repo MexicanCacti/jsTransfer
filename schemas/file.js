@@ -26,6 +26,8 @@ const File = new mongoose.Schema({
     size : {
         type: Number,
     }
-})
+});
 
-module.exports = mongoose.model('File', File)
+File.index({ filename: 'text' });
+
+module.exports = mongoose.models.File || mongoose.model('File', File);

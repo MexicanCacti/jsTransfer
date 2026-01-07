@@ -4,13 +4,15 @@ const mongoDBURL = "mongodb://localhost:27017/test";
 
 const app = express();
 const uploadRoute = require('./routes/upload.js');
-const registerRoute = require('./routes/register.js');
+const downloadRoute = require('./routes/download.js');
+const searchRoute = require('./routes/search');
 const port = 3000; //Note update to get from .env file
 
 app.use(express.json())
 app.use(express.static('public'))
 app.use(uploadRoute)
-app.use(registerRoute);
+app.use(downloadRoute);
+app.use(searchRoute);
 
 app.set("view engine", "ejs");
 
