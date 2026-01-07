@@ -12,8 +12,7 @@ const File = new mongoose.Schema({
     password : String,
     uploadedBy: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        required: true,
+        ref: 'User'
     },
     uploadDate: {
         type: Date,
@@ -23,6 +22,9 @@ const File = new mongoose.Schema({
         type: Number,
         required: true,
         default: 0,
+    },
+    size : {
+        type: Number,
     }
 })
 

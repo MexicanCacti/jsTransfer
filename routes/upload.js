@@ -1,8 +1,8 @@
 const express = require('express');
-const File = require("../schemas/File")
+const upload = require("../middleware/multer");
+const uploadLogic = require("../logic/uploadLogic");
 
 const router = express.Router();
-
 
 router.use((req, res, next) => {
     console.log('Time', Date.now());
@@ -15,20 +15,17 @@ router.use((req, res, next) => {
     next()
 })
 
-router.get('/upload', (req, res, next) => {
-    // res.render(uploadPage)
-    console.log('Giving uploadPage!')
-    res.send("<h1>Upload Page</h1>");
-})
-
-router.post('/upload', async (req, res) => {
-    try{
-        const file = await File.create(req.body);
-        res.status(201).json({id : file._id})
-    } catch (err) {
-        res.status(400).json({error: err})
-    }
-})
+router.post('/upload', (req, res) => {
+    upload.single('file')(req, res, err => {
+        if (err) {
+            return res.status(400).render('error', {
+                error: err.message,
+                success: null
+            });
+        }
+        uploadLogic.handleUpload(req, res);
+    });
+});
 
 
 module.exports = router
