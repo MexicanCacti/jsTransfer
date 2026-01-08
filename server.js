@@ -1,12 +1,14 @@
+require('dotenv').config();
+
 const express = require('express');
 const mongoose = require('mongoose');
-const mongoDBURL = "mongodb://localhost:27017/test";
+const mongoDBURL = process.env.MONGODB_URL
 
 const app = express();
 const uploadRoute = require('./routes/upload.js');
 const downloadRoute = require('./routes/download.js');
 const searchRoute = require('./routes/search');
-const port = 3000; //Note update to get from .env file
+const port = process.env.PORT || 3000;
 
 app.use(express.json())
 app.use(express.static('public'))
