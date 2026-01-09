@@ -8,6 +8,7 @@ const app = express();
 const uploadRoute = require('./routes/upload.js');
 const downloadRoute = require('./routes/download.js');
 const searchRoute = require('./routes/search');
+const host = process.env.HOST || '0.0.0.0';
 const port = process.env.PORT || 3000;
 
 app.use(express.json())
@@ -22,7 +23,7 @@ mongoose.connect(mongoDBURL)
     .then(() => {
         console.log("Connection Successful")
 
-        app.listen(port, (error) =>{
+        app.listen(port, host, (error) =>{
             if (error)
                 console.log(error);
             else
