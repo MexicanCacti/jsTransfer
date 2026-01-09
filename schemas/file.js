@@ -9,7 +9,11 @@ const File = new mongoose.Schema({
         type: String,
         required: true,
     },
-    password : String,
+    password : {
+        type: String,
+        select : false,
+        default : null,
+    },
     uploadedBy: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'

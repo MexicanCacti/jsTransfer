@@ -1,4 +1,7 @@
 const File = require("../schemas/File")
+const bcrypt = require("bcrypt")
+
+const salt_amount = 10;
 
 exports.handleUpload = async (req, res) => {
     try {
@@ -9,11 +12,18 @@ exports.handleUpload = async (req, res) => {
             });
         }
 
-        const file = await File.create({
+        let passwordHash = ""
+        if(req.body.password && req.body.password.trim() !== "" ){
+            console.log(req.body.password.trim());
+            passwordHash = await bcrypt.hash(req.body.password, salt_amount);
+        }
+
+        await File.create({
             path: req.file.path,
             filename: req.file.filename,
             size: req.file.size,
-            uploadDate: Date.now()
+            uploadDate: Date.now(),
+            password: passwordHash
         });
 
         res.status(201).render('upload', {

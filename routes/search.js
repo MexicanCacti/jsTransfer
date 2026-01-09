@@ -16,7 +16,12 @@ router.get('/search', async(req, res) => {
             .sort({ score: { $meta: 'textScore' } })
             .skip(skip)
             .limit(displayLimit)
+            .select("_id filename password")
             .lean();
+        files.forEach(f => {
+            f.hasPassword = Boolean(f.password)
+            delete f.password;
+        })
         const totalFiles = await File.countDocuments();
         const totalPages = Math.ceil(totalFiles / displayLimit);
         res.render('search', {
