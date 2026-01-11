@@ -10,9 +10,7 @@
     <title>File Share</title>
 </head>
 <body>
-<h1> Submit a file for upload</h1>
-<button class="navButton" id="uploadButton"> Upload </button>
-<button class="navButton" id="downloadButton"> Download </button>
+<%- include('partials/header', {title: 'Submit a file for upload'}) %>
 
 <% if (error) { %>
     <div class="error"><%= error %></div>

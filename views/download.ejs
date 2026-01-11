@@ -10,9 +10,7 @@
     <title>File Share</title>
 </head>
 <body>
-<h1> Search & Browse Files</h1>
-<button class="navButton" id="uploadButton"> Upload </button>
-<button class="navButton" id="downloadButton"> Download </button>
+<%- include('partials/header', {title: 'Search & Browse Files'}) %>
 
 
 <h2> Search </h2>
@@ -54,14 +52,6 @@
     document.getElementById('uploadButton').addEventListener('click', goToUploadPage);
     document.getElementById('downloadButton').addEventListener('click', goToDownloadPage);
     document.getElementById('searchButton').addEventListener('click', goToSearchPage);
-
-    function goToUploadPage() {
-        window.location.href = '/upload'
-    }
-
-    function goToDownloadPage() {
-        window.location.href = '/download'
-    }
 
     function goToSearchPage() {
         const searchQuery = document.getElementById('file-search').value.trim();
