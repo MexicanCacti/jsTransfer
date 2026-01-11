@@ -1,14 +1,4 @@
-<!DOCTYPE html>
-
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible"
-          content="IE=edge">
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
-    <title>File Share</title>
-</head>
+<%- include('partials/metadata', {lang: 'en', tabTitle: 'Search'}) %>
 <body>
 <%- include('partials/header', {title: 'Search Files'}) %>
 
@@ -17,39 +7,9 @@
 <button id="searchButton">Search</button>
 
 <h2> Search Results </h2>
-<ul>
-    <% files.forEach(file => { %>
-        <li>
-            <%= file.filename %>
-            <% if (file.hasPassword) { %>
-                <input
-                        type="password"
-                        placeholder="File Password"
-                        id="pass-<%= file._id%>"
-                />
-                <button onclick="downloadProtected('<%= file._id%>')">
-                    Download
-                </button>
-            <% } else { %>
-                <a href="/files/<%= file._id %>/download">Download</a>
-            <% } %>
-        </li>
-    <% }) %>
-</ul>
-
-<div>
-    <% if (page > 1) { %>
-        <a href="/search?page=<%= page - 1 %>">Prev</a>
-    <% } %>
-
-    <% if (page < totalPages) { %>
-        <a href="/search?page=<%= page + 1 %>">Next</a>
-    <% } %>
-</div>
+<%- include('partials/file_display') %>
 
 <script>
-    document.getElementById('uploadButton').addEventListener('click', goToUploadPage);
-    document.getElementById('downloadButton').addEventListener('click', goToDownloadPage);
     document.getElementById('searchButton').addEventListener('click', searchFiles);
 
     async function searchFiles() {
@@ -66,49 +26,6 @@
             list.appendChild(li);
         });
     }
-
-    async function downloadProtected(fileId) {
-        const password = document.getElementById(`pass-${fileId}`).value;
-        if (!password) {
-            alert("Password is required");
-            return;
-        }
-
-        const response = await fetch(`/files/${fileId}/download`, {
-            method: 'POST',
-            headers: {
-                "content-type": "application/json",
-            },
-            body: JSON.stringify({ password })
-        });
-
-        if (!response.ok) {
-            alert("Invalid Password");
-            return;
-        }
-
-        const disposition = response.headers.get("Content-Disposition");
-        let filename = "download";
-
-        if (disposition && disposition.includes("filename=")) {
-            filename = disposition
-                .split("filename=")[1]
-                .replace(/"/g, "");
-        }
-
-        const blob = await response.blob();
-        const url = window.URL.createObjectURL(blob);
-
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = filename;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-
-        window.URL.revokeObjectURL(url);
-    }
 </script>
 
 </body>
-</html>
