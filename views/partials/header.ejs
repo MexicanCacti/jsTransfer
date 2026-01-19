@@ -1,7 +1,8 @@
+<!DOCTYPE html>
 <header>
     <h1><%= title || 'File Share'%></h1>
 
-    <% if (session.userID) { %>
+    <% if (session.user_id) { %>
         <h3>Current User:
             <% if (session.username) { %>
                 <%= session.username %>
@@ -16,6 +17,22 @@
         <button class="button" onclick="window.location.href='/upload'">Upload</button>
         <button class="button" onclick="window.location.href='/download'">Download</button>
         <button class="button" onclick="window.location.href='/search'">Search</button>
-        <button class="button">Logout</button>
+        <button class="button" onclick="logout()">Logout</button>
     </nav>
 </header>
+
+<script>
+    async function logout(){
+        const response = await fetch("/sessions", {
+            method: "DELETE",
+            credentials: "same-origin"
+        });
+
+        if (response.ok){
+            window.location.href='/';
+        }
+        else{
+            alert("Logout failed");
+        }
+    }
+</script>

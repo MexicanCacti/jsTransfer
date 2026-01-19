@@ -4,17 +4,15 @@
 
 <h2> Search </h2>
 <label for="file-search"></label><input type="search" id="file-search" name="file-search">
-<button id="searchButton">Search</button>
+<button id="searchButton" onclick=searchFiles()>Search</button>
 
 <h2> Search Results </h2>
 <%- include('partials/file_display') %>
 
 <script>
-    document.getElementById('searchButton').addEventListener('click', searchFiles);
-
     async function searchFiles() {
         const query = document.getElementById('file-search').value.trim();
-        const res = await fetch(`/api/search?query=${encodeURIComponent(query)}`);
+        const res = await fetch(`/files/search?query=${encodeURIComponent(query)}`);
         const files = await res.json();
 
         const list = document.querySelector('ul');
@@ -22,7 +20,7 @@
 
         files.forEach(file => {
             const li = document.createElement('li');
-            li.innerHTML = `${file.filename} <a href="/files/${file._id}/download">Download</a>`;
+            li.innerHTML = `${file.filename} <a href="/files/${file._id}">Download</a>`;
             list.appendChild(li);
         });
     }

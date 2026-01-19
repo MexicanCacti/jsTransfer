@@ -2,76 +2,84 @@ require('dotenv').config();
 
 const express = require('express');
 const mongoose = require('mongoose');
-const app = express();
 
 const session = require('express-session');
 const MongoStore = require('connect-mongo').default;
 
-const uploadRoute = require('./routes/upload.js');
-const downloadRoute = require('./routes/download.js');
-const searchRoute = require('./routes/search');
+const app = express();
 const requireLogin = require("./middleware/auth");
+const downloadRoute = require('./routes/download.js');
+const filesRoute = require('./routes/files.js');
+const searchRoute = require('./routes/search.js');
+const sessionsRoute = require('./routes/sessions.js');
+const uploadRoute = require('./routes/upload.js');
+const usersRoute = require('./routes/users.js');
+
 const host = process.env.HOST || '0.0.0.0';
 const port = process.env.PORT || 3000;
-const mongoDBURL = process.env.MONGODB_URL
-
-app.use(express.json())
-app.use(express.static('public'))
-
-app.use(session({
-    name: "fileshare.sid",
-    secret: process.env.SESSION_SECRET,
-    resave: false,
-    saveUninitialized: false,
-    store: MongoStore.create({
-        mongoUrl: process.env.MONGODB_URL
-    }),
-    cookie: {
-        httpOnly: true,
-        secure: false,
-        maxAge: 1000 * 60 * 60 * 24
-    }
-}));
+const mongoDBURL = process.env.MONGODB_URL;
 
 
+app.use(express.json());
+app.use(express.static('public'));
+
+app.set('view engine', 'ejs');
+
+app.use(
+    session({
+        name: 'fileshare.sid',
+        secret: process.env.SESSION_SECRET,
+        resave: false,
+        saveUninitialized: false,
+        store: MongoStore.create({
+            mongoUrl: mongoDBURL,
+        }),
+        cookie: {
+            httpOnly: true,
+            secure: false,
+            maxAge: 1000 * 60 * 60 * 24, // 1 day
+        },
+    })
+);
+
+
+app.use((req, res, next) => {
+    res.locals.session = req.session;
+    next();
+})
+
+app.use(sessionsRoute);
+app.use(usersRoute);
 
 app.use("/upload", requireLogin, uploadRoute);
 app.use("/download", requireLogin, downloadRoute);
+app.use("/files", requireLogin, filesRoute);
 app.use("/search", requireLogin, searchRoute);
-app.use("/files", requireLogin);
 
-app.set("view engine", "ejs");
 
-mongoose.connect(mongoDBURL)
+app.get('/', (req, res) => {
+    if (req.session.user_id) {
+        return res.redirect("/download");
+    }
+    res.render('login', { error: null, success: null });
+});
+
+app.get('/login', (req, res) => {
+    if (req.session.user_id) {
+        return res.redirect("/download");
+    }
+    res.render("login", { error: null, success: null });
+});
+
+mongoose
+    .connect(mongoDBURL)
     .then(() => {
-        console.log("Connection Successful")
-
-        app.listen(port, host, (error) =>{
-            if (error)
-                console.log(error);
-            else
-                console.log("OK!")
+        console.log('MongoDB connection successful');
+        app.listen(port, host, (err) => {
+            if (err) console.error(err);
+            else console.log(`Server running at http://${host}:${port}`);
         });
     })
-    .catch((err) => console.error("Connection Error:", err));
-
-app.get("/", (req, res) => {
-    res.render("login")
-})
-
-app.get("/upload", (req, res) => {
-    res.render("upload", {
-        error: null,
-        success: null
-    });
-})
-
-app.get("/download", (req, res) => {
-    res.render("download");
-})
-
-app.get("/login", (req, res) => {
-    res.render("login");
-})
+    .catch((err) => console.error('MongoDB connection error:', err));
 
 module.exports = app;

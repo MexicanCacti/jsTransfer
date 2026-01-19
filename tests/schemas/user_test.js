@@ -10,14 +10,14 @@ let testPassword = "hashedPassword"
 describe('User Schema', () => {
     it("saves a vaild user", async() => {
         const user = new User({
-            email: testEmail,
+            username: testEmail,
             hashedPassword: testPassword,
         })
 
         const saved = await user.save()
 
         expect(saved._id).to.exist
-        expect(saved.email).to.equal(testEmail)
+        expect(saved.username).to.equal(testEmail)
         expect(saved.hashedPassword).to.equal(testPassword)
 
         it("fails without email", async() => {
@@ -28,7 +28,7 @@ describe('User Schema', () => {
                 throw new Error("Should not save user without email")
             } catch(err){
                 expect(err).to.exist
-                expect(err.errors.email).to.exist
+                expect(err.errors.username).to.exist
             }
         })
 
